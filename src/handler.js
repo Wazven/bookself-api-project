@@ -2,7 +2,7 @@
 
 const { nanoid } = require("nanoid");
 const books = require("./books");
-//Kriteria 3 API dapat menyimpan buku
+//Kriteria 3 API dapat menyimpan buku (addBookHandler)
 const addBookHandler = (request, h) => {
   const {
     name,
@@ -74,7 +74,72 @@ const addBookHandler = (request, h) => {
   response.code(500);
   return response;
 };
+//kriteria 4: API menampilkan seluruh buku
+const getAllBooksHandler = (request, h) => {
+  const { name, reading, finished } = request.query;
 
+  if (name !== undefined) {
+    const NameBooks = books.filter((book) =>
+      book.name.toLowerCase().include(name.toLowerCase())
+    );
+    const response = h.response({
+      status: "success",
+      data: {
+        books: NameBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  } else if (reading !== undefined) {
+    const ReadingBooks = books.filter(
+      (book) => Number(book.reading) === Number(reading)
+    );
+    const response = h.response({
+      status: "success",
+      data: {
+        books: ReadingBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  } else if (finished !== undefined) {
+    const finishedBooks = books.filter((book) => book.finished == finished);
+    const response = h.response({
+      status: "success",
+      data: {
+        books: finishedBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  } else {
+    const response = h.response({
+      status: "success",
+      data: {
+        books: books.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+};
 module.exports = {
   addBookHandler,
+  getAllBooksHandler,
 };
